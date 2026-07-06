@@ -17,6 +17,7 @@ https://rroki-0u0.github.io/vpm-repos/index.json
 | パッケージ | 説明 | 依存 |
 | --- | --- | --- |
 | [TexTransTool Poiyomi Support](Packages/jp.rroki.ttt-poiyomi-support/) (`jp.rroki.ttt-poiyomi-support`) | TexTransTool の AtlasTexture に Poiyomi Toon/Pro の全テクスチャスロットの UV 使用情報を提供 | [TexTransTool](https://vpm.rs64.net/) |
+| [Submesh Mask Baker](Packages/jp.rroki.submesh-mask-baker/) (`jp.rroki.submesh-mask-baker`) | 指定サブメッシュ (マテリアルスロット) の UV 領域を白黒マスク PNG として焼き出すエディタ拡張 | なし |
 
 ## リポジトリ構成
 

@@ -1,0 +1,61 @@
+name: Release Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_id:
+        description: "Packages/ 配下のパッケージフォルダ名"
+        required: true
+        default: "jp.rroki.ttt-poiyomi-support"
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read package metadata
+        id: pkg
+        run: |
+          set -eu
+          dir="Packages/${{ github.event.inputs.package_id }}"
+          test -f "$dir/package.json"
+          name="$(jq -r .name "$dir/package.json")"
+          version="$(jq -r .version "$dir/package.json")"
+          {
+            echo "dir=$dir"
+            echo "name=$name"
+            echo "version=$version"
+            echo "zip=$name-$version.zip"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create package zip
+        run: |
+          set -eu
+          cd "${{ steps.pkg.outputs.dir }}"
+          zip -r "$GITHUB_WORKSPACE/${{ steps.pkg.outputs.zip }}" .
+
+      - name: Compute SHA256
+        run: sha256sum "${{ steps.pkg.outputs.zip }}" > "${{ steps.pkg.outputs.zip }}.sha256"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          tag="${{ steps.pkg.outputs.name }}-v${{ steps.pkg.outputs.version }}"
+          gh release create "$tag" \
+            "${{ steps.pkg.outputs.zip }}" \
+            "${{ steps.pkg.outputs.zip }}.sha256" \
+            "${{ steps.pkg.outputs.dir }}/package.json" \
+            --title "${{ steps.pkg.outputs.name }} ${{ steps.pkg.outputs.version }}" \
+            --notes "詳細はパッケージ内の CHANGELOG.md を参照してください。"
+
+      - name: Trigger listing rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run build-listing.yml --ref main

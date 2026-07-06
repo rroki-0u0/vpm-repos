@@ -1,0 +1,17 @@
+{
+  "name": "jp.rroki.ttt-poiyomi-support",
+  "displayName": "TexTransTool Poiyomi Support",
+  "version": "0.1.0",
+  "unity": "2022.3",
+  "description": "Provides Poiyomi Toon/Pro texture UV usage information to TexTransTool's AtlasTexture so that all texture slots (alpha maps, matcap masks, etc.) are atlased correctly. Locked shaders are supported.",
+  "license": "MIT",
+  "author": {
+    "name": "rroki-0u0",
+    "url": "https://github.com/rroki-0u0"
+  },
+  "repo": "https://rroki-0u0.github.io/vpm-repos/index.json",
+  "documentationUrl": "https://github.com/rroki-0u0/vpm-repos",
+  "vpmDependencies": {
+    "net.rs64.tex-trans-tool": "^1.0.0"
+  }
+}

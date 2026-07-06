@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rroki-0u0 VPM Packages</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+    max-width: 720px; margin: 0 auto; padding: 2rem 1rem; line-height: 1.7;
+  }
+  h1 { font-size: 1.5rem; }
+  .actions { display: flex; gap: .75rem; flex-wrap: wrap; margin: 1.5rem 0; }
+  .btn {
+    display: inline-block; padding: .6rem 1.2rem; border-radius: .5rem;
+    background: #1a7f37; color: #fff; text-decoration: none; font-weight: 600;
+    border: none; font-size: 1rem; cursor: pointer;
+  }
+  .btn.secondary { background: #57606a; }
+  code.url {
+    display: block; padding: .6rem .8rem; border-radius: .5rem;
+    background: rgba(128,128,128,.15); overflow-x: auto; user-select: all;
+  }
+  table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid rgba(128,128,128,.3); }
+  footer { margin-top: 3rem; font-size: .85rem; opacity: .7; }
+</style>
+</head>
+<body>
+<h1>rroki-0u0 VPM Packages</h1>
+<p>VRChat 向けパッケージの VPM リポジトリです。VCC (VRChat Creator Companion) または ALCOM に追加して利用してください。</p>
+
+<div class="actions">
+  <a class="btn" href="vcc://vpm/addRepo?url=https%3A%2F%2Frroki-0u0.github.io%2Fvpm-repos%2Findex.json">Add to VCC</a>
+  <button class="btn secondary" onclick="navigator.clipboard.writeText('https://rroki-0u0.github.io/vpm-repos/index.json')">URL をコピー</button>
+</div>
+
+<code class="url">https://rroki-0u0.github.io/vpm-repos/index.json</code>
+
+<h2>収録パッケージ</h2>
+<table id="packages">
+  <thead><tr><th>パッケージ</th><th>最新版</th><th>説明</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<footer>
+  ソース / 不具合報告: <a href="https://github.com/rroki-0u0/vpm-repos">github.com/rroki-0u0/vpm-repos</a>
+</footer>
+
+<script>
+  fetch("./index.json").then(r => r.json()).then(listing => {
+    const tbody = document.querySelector("#packages tbody");
+    for (const [id, pkg] of Object.entries(listing.packages)) {
+      const versions = Object.keys(pkg.versions).sort((a, b) =>
+        b.localeCompare(a, undefined, { numeric: true }));
+      const latest = pkg.versions[versions[0]];
+      const tr = document.createElement("tr");
+      const name = document.createElement("td");
+      name.innerHTML = `<strong>${latest.displayName ?? id}</strong><br><small>${id}</small>`;
+      const ver = document.createElement("td");
+      ver.textContent = versions[0];
+      const desc = document.createElement("td");
+      desc.textContent = latest.description ?? "";
+      tr.append(name, ver, desc);
+      tbody.append(tr);
+    }
+  });
+</script>
+</body>
+</html>

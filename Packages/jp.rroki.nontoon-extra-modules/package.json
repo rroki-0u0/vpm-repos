@@ -1,0 +1,15 @@
+{
+  "name": "jp.rroki.nontoon-extra-modules",
+  "displayName": "NonToon Extra Modules",
+  "version": "0.1.0",
+  "unity": "2022.3",
+  "description": "lilxyzw NonToon に エミッション / 色調整 / グリッター モジュールを追加する Shader Core モジュール集。Poiyomi to NonToon Converter と併用すると Poiyomi マテリアルからの設定引き継ぎにも対応します (単体でも使用可能)。",
+  "license": "MIT",
+  "author": { "name": "rroki-0u0", "url": "https://github.com/rroki-0u0" },
+  "repo": "https://rroki-0u0.github.io/vpm-repos/index.json",
+  "documentationUrl": "https://github.com/rroki-0u0/vpm-repos",
+  "vpmDependencies": {
+    "jp.lilxyzw.nontoon": "^0.1.3",
+    "jp.lilxyzw.shadercore": "^0.1.5"
+  }
+}

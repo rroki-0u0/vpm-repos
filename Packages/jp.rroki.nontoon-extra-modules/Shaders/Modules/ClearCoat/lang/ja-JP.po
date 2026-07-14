@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja-JP\n"
+
+msgid "ClearCoat"
+msgstr "クリアコート"
+
+msgid "Smoothness"
+msgstr "滑らかさ"
+
+msgid "Specular Highlight"
+msgstr "ハイライト強度"
+
+msgid "Reflection"
+msgstr "映り込み強度"

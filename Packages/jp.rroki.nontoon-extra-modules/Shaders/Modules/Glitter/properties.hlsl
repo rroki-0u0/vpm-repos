@@ -1,0 +1,10 @@
+SC_uint(_Enable, 0, [SCInHeader][SCToggle][SCConstValue(1,pixel)], "", "")
+
+SC_color(_GlitterColor, (1,1,1,1), [HDR], "__Color", "")
+SC_float(_GlitterBrightness, 1, [SCRange(0,10)], "Brightness", "")
+SC_float(_GlitterFrequency, 256, [SCRange(4,2048)], "Frequency", "")
+SC_float(_GlitterDensity, 0.05, [SCRange(0.001,1)], "Density", "")
+SC_float(_GlitterSpeed, 5, [SCRange(0,30)], "Twinkle Speed", "")
+SC_float(_GlitterMultiplyAlbedo, 0, [SCRange(0,1)], "__MultiplyAlbedo", "")
+SC_uint(_GlitterUV, 0, [SCEnum(UV0, 0, UV1, 1, UV2, 2, UV3, 3)], "__UV", "")
+SC_uint(_GlitterMaskChannel, 3, [SCMaskChannel], "__MaskChannel", "")

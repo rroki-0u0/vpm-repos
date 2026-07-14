@@ -1,0 +1,7 @@
+{
+    "name": "Emission",
+    "uniqueID": "jp.rroki.nontoon.emission",
+    "phases": [
+        { "phase": "postpixel", "path": "emission.hlsl", "befores": ["DistanceFade"] }
+    ]
+}

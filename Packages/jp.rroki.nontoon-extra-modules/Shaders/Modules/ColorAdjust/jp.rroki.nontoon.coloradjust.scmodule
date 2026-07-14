@@ -1,0 +1,7 @@
+{
+    "name": "ColorAdjust",
+    "uniqueID": "jp.rroki.nontoon.coloradjust",
+    "phases": [
+        { "phase": "base", "path": "coloradjust.hlsl", "befores": ["Details"] }
+    ]
+}

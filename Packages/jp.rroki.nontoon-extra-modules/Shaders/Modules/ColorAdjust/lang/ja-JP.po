@@ -1,0 +1,21 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja-JP\n"
+
+msgid "ColorAdjust"
+msgstr "色調整"
+
+msgid "Hue"
+msgstr "色相"
+
+msgid "Saturation"
+msgstr "彩度"
+
+msgid "Brightness"
+msgstr "明度"
+
+msgid "Gamma"
+msgstr "ガンマ"

@@ -1,0 +1,26 @@
+{
+    "name": "jp.rroki.nontoon-extra-modules.editor",
+    "rootNamespace": "",
+    "references": [
+        "jp.rroki.poiyomi-to-nontoon.editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "RROKI_POI2NT"
+    ],
+    "versionDefines": [
+        {
+            "name": "jp.rroki.poiyomi-to-nontoon",
+            "expression": "",
+            "define": "RROKI_POI2NT"
+        }
+    ],
+    "noEngineReferences": false
+}

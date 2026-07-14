@@ -1,0 +1,7 @@
+{
+    "name": "Decal",
+    "uniqueID": "jp.rroki.nontoon.decal",
+    "phases": [
+        { "phase": "base", "path": "decal.hlsl", "afters": ["ColorAdjust", "Details", "HeightParallax"] }
+    ]
+}

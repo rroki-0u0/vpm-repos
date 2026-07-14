@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja-JP\n"
+
+msgid "InternalParallax"
+msgstr "内部パララックス"
+
+msgid "Mode"
+msgstr "モード"
+
+msgid "Surface Blend"
+msgstr "表面ブレンド"
+
+msgid "Internal Map"
+msgstr "内部マップ"
+
+msgid "Depth Range"
+msgstr "深度範囲"
+
+msgid "Brightness (Near)"
+msgstr "明るさ (浅い側)"
+
+msgid "Brightness (Far)"
+msgstr "明るさ (深い側)"
+
+msgid "Color (Near)"
+msgstr "色 (浅い側)"
+
+msgid "Color (Far)"
+msgstr "色 (深い側)"
+
+msgid "Strength"
+msgstr "強度"
+
+msgid "Lit"
+msgstr "ライティングを受ける"
+
+msgid "Layers"
+msgstr "レイヤー数"

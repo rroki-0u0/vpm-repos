@@ -1,0 +1,14 @@
+{
+  "name": "jp.rroki.ttt-nontoon-support",
+  "displayName": "TexTransTool NonToon Support",
+  "version": "0.1.0",
+  "unity": "2022.3",
+  "description": "lilxyzw NonToon / NonToonFur (と jp.rroki.nontoon-extra-modules のモジュール群) のテクスチャ UV 使用情報を TexTransTool の AtlasTexture へ提供します。モジュール構成の変更 (シェーダー再生成) にも追従します。",
+  "license": "MIT",
+  "author": { "name": "rroki-0u0", "url": "https://github.com/rroki-0u0" },
+  "repo": "https://rroki-0u0.github.io/vpm-repos/index.json",
+  "documentationUrl": "https://github.com/rroki-0u0/vpm-repos",
+  "vpmDependencies": {
+    "net.rs64.tex-trans-tool": "^1.0.0"
+  }
+}

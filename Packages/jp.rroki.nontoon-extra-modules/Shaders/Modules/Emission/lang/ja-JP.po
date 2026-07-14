@@ -1,0 +1,27 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja-JP\n"
+
+msgid "Emission"
+msgstr "エミッション"
+
+msgid "Strength"
+msgstr "強度"
+
+msgid "Emission Map"
+msgstr "エミッションマップ"
+
+msgid "Scroll Speed (XY)"
+msgstr "スクロール速度 (XY)"
+
+msgid "Blink (Min, Max, Speed, Offset)"
+msgstr "点滅 (最小, 最大, 速度, 位相)"
+
+msgid "Hue Shift"
+msgstr "色相シフト"
+
+msgid "Hue Shift Speed"
+msgstr "色相シフト速度"

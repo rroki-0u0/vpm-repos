@@ -1,0 +1,7 @@
+{
+    "name": "Glitter",
+    "uniqueID": "jp.rroki.nontoon.glitter",
+    "phases": [
+        { "phase": "postpixel", "path": "glitter.hlsl", "befores": ["DistanceFade"] }
+    ]
+}

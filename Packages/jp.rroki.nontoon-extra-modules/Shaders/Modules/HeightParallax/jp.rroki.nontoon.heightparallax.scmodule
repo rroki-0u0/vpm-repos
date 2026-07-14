@@ -1,0 +1,7 @@
+{
+    "name": "HeightParallax",
+    "uniqueID": "jp.rroki.nontoon.heightparallax",
+    "phases": [
+        { "phase": "base", "path": "heightparallax.hlsl", "befores": ["ColorAdjust", "Details"] }
+    ]
+}

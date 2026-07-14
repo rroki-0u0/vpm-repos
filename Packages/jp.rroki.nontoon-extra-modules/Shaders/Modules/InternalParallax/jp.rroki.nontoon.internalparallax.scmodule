@@ -1,0 +1,8 @@
+{
+    "name": "InternalParallax",
+    "uniqueID": "jp.rroki.nontoon.internalparallax",
+    "phases": [
+        { "phase": "base", "path": "internalparallax_base.hlsl" },
+        { "phase": "add", "path": "internalparallax.hlsl" }
+    ]
+}

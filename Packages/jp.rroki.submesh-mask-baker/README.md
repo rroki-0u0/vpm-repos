@@ -6,7 +6,7 @@ SkinnedMeshRenderer の指定サブメッシュ(Materials 要素)の三角形を
 
 ## 使い方
 
-1. メニュー `Tools > rroki_'s tool > Submesh Mask Baker` を開く
+1. メニュー `Tools > rroki_'s tools > Submesh Mask Baker` を開く
 2. パラメータを設定して **Bake**:
 
 | パラメータ | 説明 |

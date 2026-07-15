@@ -1,7 +1,7 @@
 {
   "name": "jp.rroki.poiyomi-to-nontoon",
   "displayName": "Poiyomi to NonToon Converter",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "unity": "2022.3",
   "description": "Poiyomi Toon/Pro のマテリアルを lilxyzw NonToon マテリアルへ変換するエディタ拡張。ロック済みマテリアルにも対応し、影色のグラデーションベイク・マスクのチャンネルパック・メインカラーのテクスチャベイクを行います。",
   "license": "MIT",

@@ -23,7 +23,7 @@ namespace Rroki.NonToonExtraModules.Tools
 
         static readonly string[] ChannelLabels = { "R", "G", "B", "A" };
 
-        [MenuItem("Tools/rroki/NonToon/SDF Neck Fade Baker")]
+        [MenuItem("Tools/rroki_'s tools/NonToon/SDF Neck Fade Baker")]
         public static void Open() => GetWindow<SdfNeckFadeBaker>("SDF Neck Fade Baker");
 
         /// <summary>マスク生成ツールから、生成したマスクを渡して開く導線。</summary>

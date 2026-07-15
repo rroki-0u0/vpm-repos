@@ -26,15 +26,15 @@ NonToon は [Shader Core](https://github.com/lilxyzw/ShaderCore) ベースのモ
 ## 使い方
 
 1. マテリアル (または GameObject) を選択
-2. 右クリック → `rroki_'s tool/Poiyomi → NonToon 変換...`
-   (または `Tools/rroki_'s tool/Poiyomi to NonToon Converter`)
+2. 右クリック → `rroki_'s tools/Poiyomi → NonToon 変換...`
+   (または `Tools/rroki_'s tools/Poiyomi to NonToon Converter`)
 3. オプションを確認して「変換」
 4. レポートで「近似」「要確認」「未対応」の項目を確認し、必要に応じて手動調整
 
 ### アニメーションクリップの変換
 
 Poiyomi のマテリアルプロパティをアニメーションしているクリップ (エミッションの色相シフトによるカラーチェンジ等) は、
-`Tools/rroki_'s tool/Poiyomi → NonToon Animation Retarget` で NonToon のプロパティパスへ変換できます
+`Tools/rroki_'s tools/Poiyomi → NonToon Animation Retarget` で NonToon のプロパティパスへ変換できます
 (時間係数が異なる色相シフト速度 / UV パンは値を自動換算)。
 NonToon のインスペクターは録画モードのキー記録に対応していないため、新規にキーを打つ場合は
 Animation ウィンドウの Add Property から `Material._jp_rroki_nontoon_emission_EmissionHueShift` 等を直接追加してください。

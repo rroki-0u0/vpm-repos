@@ -15,7 +15,7 @@ namespace Rroki.PoiyomiToNonToon
         Vector2 _scrollMaterials;
         Vector2 _scrollReports;
 
-        [MenuItem("Tools/rroki_'s tool/Poiyomi to NonToon Converter")]
+        [MenuItem("Tools/rroki_'s tools/Poiyomi to NonToon Converter")]
         public static void Open()
         {
             var window = GetWindow<ConverterWindow>("Poiyomi → NonToon");

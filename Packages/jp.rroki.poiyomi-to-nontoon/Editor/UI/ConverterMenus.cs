@@ -8,7 +8,7 @@ namespace Rroki.PoiyomiToNonToon
     /// <summary>右クリックメニュー登録。</summary>
     internal static class ConverterMenus
     {
-        const string AssetsMenu = "Assets/rroki_'s tool/Poiyomi → NonToon 変換...";
+        const string AssetsMenu = "Assets/rroki_'s tools/Poiyomi → NonToon 変換...";
         const string ContextMenu = "CONTEXT/Material/Poiyomi → NonToon 変換...";
 
         [MenuItem(AssetsMenu, false, 2000)]
@@ -34,7 +34,7 @@ namespace Rroki.PoiyomiToNonToon
 
         // ---- 未使用プロパティの掃除 (変換済みマテリアル向け) ----
 
-        const string CleanMenu = "Assets/rroki_'s tool/マテリアルの未使用プロパティを削除";
+        const string CleanMenu = "Assets/rroki_'s tools/マテリアルの未使用プロパティを削除";
 
         [MenuItem(CleanMenu, false, 2001)]
         static void CleanSelected()

@@ -3,6 +3,12 @@
 このプロジェクトの注目すべき変更はこのファイルに記録されます。
 フォーマットは [Keep a Changelog](https://keepachangelog.com/ja/1.1.0/) に基づきます。
 
+## [0.2.1] - 2026-07-16
+
+### Changed
+
+- ツールメニューを **`Tools/rroki_'s tools/...`** / 右クリック **`Assets/rroki_'s tools/...`** へ統一 (従来の `rroki_'s tool` から複数形に、他の rroki ツールと統一)
+
 ## [0.2.0] - 2026-07-15
 
 ### Added

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] - 2026-07-16
+
+### Changed
+
+- ツールメニューを `Tools/rroki_'s tool/...` から **`Tools/rroki_'s tools/...`** へ統一 (他の rroki ツールと統一)
+
 ## [1.0.0] - 2026-07-07
 
 ### Added

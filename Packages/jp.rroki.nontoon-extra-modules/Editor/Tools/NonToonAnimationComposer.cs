@@ -47,7 +47,7 @@ namespace Rroki.NonToonExtraModules.Tools
         Vector2 _scroll;
         string _log = "";
 
-        [MenuItem("Tools/rroki/NonToon/Animation Composer")]
+        [MenuItem("Tools/rroki_'s tools/NonToon/Animation Composer")]
         public static void Open() => GetWindow<NonToonAnimationComposer>("NonToon Anim Composer");
 
         static bool IsNonToon(Shader? s) => s != null && (s.name == "NonToon" || s.name == "NonToonFur");

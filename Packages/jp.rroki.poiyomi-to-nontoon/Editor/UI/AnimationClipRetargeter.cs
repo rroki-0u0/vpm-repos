@@ -177,7 +177,7 @@ namespace Rroki.PoiyomiToNonToon
         Vector2 _scroll;
         string _resultLog = "";
 
-        [MenuItem("Tools/rroki_'s tool/Poiyomi → NonToon Animation Retarget")]
+        [MenuItem("Tools/rroki_'s tools/Poiyomi → NonToon Animation Retarget")]
         static void Open() => GetWindow<AnimationClipRetargeter>("Poi→NT Anim");
 
         void OnGUI()

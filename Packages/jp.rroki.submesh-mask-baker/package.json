@@ -1,7 +1,7 @@
 {
   "name": "jp.rroki.submesh-mask-baker",
   "displayName": "Submesh Mask Baker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "unity": "2022.3",
   "description": "Bakes the triangles of a selected submesh (material slot) into a black-and-white UV-space mask PNG, with dilation padding for UV seams. Useful for fur masks, feature masks, atlas masks, etc.",
   "license": "MIT",

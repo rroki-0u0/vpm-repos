@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Rroki.Tools
 {
-    // Tools/rroki_'s tool/Submesh Mask Baker
+    // Tools/rroki_'s tools/Submesh Mask Baker
     // 指定サブメッシュ(Materials要素)の三角形をUV空間に焼き込み、白黒マスクPNGを出力する
     internal sealed class SubmeshMaskBaker : EditorWindow
     {
@@ -15,7 +15,7 @@ namespace Rroki.Tools
         int _padding = 4;       // UVシームのにじみ対策(ピクセル)
         int _uvChannel = 0;     // 0 = UV0(通常)
 
-        [MenuItem("Tools/rroki_'s tool/Submesh Mask Baker")]
+        [MenuItem("Tools/rroki_'s tools/Submesh Mask Baker")]
         static void Open() => GetWindow<SubmeshMaskBaker>("Submesh Mask Baker");
 
         void OnGUI()

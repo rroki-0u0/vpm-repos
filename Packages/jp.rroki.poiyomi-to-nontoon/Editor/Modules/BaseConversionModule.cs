@@ -51,8 +51,8 @@ namespace Rroki.PoiyomiToNonToon
                     c.Report.Drop("ステンシル", "表裏別ステンシルは NonToon 非対応です");
             }
 
-            // ---- カリング ----
-            if (s.HasFloat("_Cull"))
+            // ---- カリング ---- (NonToonFur は Cull Off 固定でプロパティ無し)
+            if (s.HasFloat("_Cull") && c.HasTargetProperty(NonToonProps.Cull))
                 c.SetInt(NonToonProps.Cull, Mathf.Clamp(s.GetInt("_Cull", 2), 0, 2));
         }
 
@@ -64,6 +64,14 @@ namespace Rroki.PoiyomiToNonToon
         /// </summary>
         void ConvertRenderingMode(ConversionContext c)
         {
+            // NonToonFur は常に不透明 + AlphaToMask 固定でレンダリングモード系プロパティを持たない
+            if (!c.HasTargetProperty(NonToonProps.RenderingMode))
+            {
+                if (c.HasTargetProperty(NonToonProps.Cutoff))
+                    c.SetFloat(NonToonProps.Cutoff, c.Source.GetFloat("_Cutoff", 0.5f));
+                return;
+            }
+
             var s = c.Source;
             float src = s.GetFloat("_SrcBlend", 1f);
             float dst = s.GetFloat("_DstBlend", 0f);

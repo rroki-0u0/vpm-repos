@@ -35,8 +35,8 @@ namespace Rroki.PoiyomiToNonToon
             // 存在すれば検出する系 (バージョンによりプロパティ名が異なる可能性)
             ("_GlitterEnable", "グリッター", "jp.rroki.nontoon-extra-modules を導入すると引き継げます"),
             ("_GlitterEnabled", "グリッター", "jp.rroki.nontoon-extra-modules を導入すると引き継げます"),
-            ("_EnableDissolve", "ディゾルブ", ""),
-            ("_DissolveEnabled", "ディゾルブ", ""),
+            ("_EnableDissolve", "ディゾルブ", "jp.rroki.nontoon-extra-modules を導入すると引き継げます"),
+            ("_DissolveEnabled", "ディゾルブ", "jp.rroki.nontoon-extra-modules を導入すると引き継げます"),
             ("_DecalEnabled", "デカール", "jp.rroki.nontoon-extra-modules を導入すると引き継げます"),
             ("_EnableDecal", "デカール", "jp.rroki.nontoon-extra-modules を導入すると引き継げます"),
             ("_FlipbookEnabled", "フリップブック", ""),

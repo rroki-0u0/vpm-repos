@@ -38,6 +38,7 @@ namespace Rroki.PoiyomiToNonToon
         const string ColorAdjustMod = "jp.rroki.nontoon.coloradjust";
         const string GlitterMod = "jp.rroki.nontoon.glitter";
         const string DecalMod = "jp.rroki.nontoon.decal";
+        const string MatCapsExtraMod = "jp.rroki.nontoon.matcapsextra";
 
         // Poiyomi の時間依存プロパティは POI_TIME.x (= _Time.x = 秒/20)、NonToon 側は 秒 (_Time.y) 基準
         const float TimeScale = 1f / 20f;
@@ -61,9 +62,15 @@ namespace Rroki.PoiyomiToNonToon
                 new("_EmissionBlinkingOffset", NonToonProps.Prop(EmissionMod, "_EmissionBlink") + ".w"),
                 // 色調整
                 new("_MainHueShift", NonToonProps.Prop(ColorAdjustMod, "_AdjustHue")),
+                new("_MainHueShiftSpeed", NonToonProps.Prop(ColorAdjustMod, "_AdjustHueSpeed"), TimeScale),
                 new("_Saturation", NonToonProps.Prop(ColorAdjustMod, "_AdjustSaturation")),
                 new("_MainBrightness", NonToonProps.Prop(ColorAdjustMod, "_AdjustBrightness")),
                 new("_MainGamma", NonToonProps.Prop(ColorAdjustMod, "_AdjustGamma")),
+                // マットキャップ (追加) の色相 (スロット 3/4 は共通のシフトへ)
+                new("_Matcap3HueShift", NonToonProps.Prop(MatCapsExtraMod, "_MatCapHueShift")),
+                new("_Matcap4HueShift", NonToonProps.Prop(MatCapsExtraMod, "_MatCapHueShift")),
+                new("_Matcap3HueShiftSpeed", NonToonProps.Prop(MatCapsExtraMod, "_MatCapHueShiftSpeed"), TimeScale),
+                new("_Matcap4HueShiftSpeed", NonToonProps.Prop(MatCapsExtraMod, "_MatCapHueShiftSpeed"), TimeScale),
                 // グリッター
                 new("_GlitterColor", NonToonProps.Prop(GlitterMod, "_GlitterColor")),
                 new("_GlitterBrightness", NonToonProps.Prop(GlitterMod, "_GlitterBrightness")),

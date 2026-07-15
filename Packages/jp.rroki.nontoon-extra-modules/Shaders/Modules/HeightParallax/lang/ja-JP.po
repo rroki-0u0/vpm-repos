@@ -17,5 +17,8 @@ msgstr "強度"
 msgid "Height Offset"
 msgstr "高さオフセット"
 
-msgid "Steps"
-msgstr "ステップ数"
+msgid "Steps (Min)"
+msgstr "ステップ数 (最小・正面)"
+
+msgid "Steps (Max)"
+msgstr "ステップ数 (最大・斜め)"

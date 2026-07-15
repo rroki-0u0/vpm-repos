@@ -1,0 +1,16 @@
+{
+    "name": "jp.rroki.nontoon-extra-modules.tools.editor",
+    "rootNamespace": "Rroki.NonToonExtraModules.Tools",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

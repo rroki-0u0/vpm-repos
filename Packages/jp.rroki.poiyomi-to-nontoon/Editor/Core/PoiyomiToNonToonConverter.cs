@@ -74,8 +74,23 @@ namespace Rroki.PoiyomiToNonToon
                 return Fail(report, "アセット化されていないマテリアルは変換できません");
 
             var snapshot = PoiyomiMaterialSnapshot.Load(source);
+
+            // Fur シェーダーはシェル法ファーを持つ NonToonFur へ変換する
+            // (base NonToon シェーダーは geometry ステージを持たないためモジュールでは再現不可)
+            var targetShader = nonToon;
             if (snapshot.IsFurShader)
-                report.Warn("Fur", "Poiyomi Fur シェーダーです。ファー機能は未対応です (NonToonFur への変換は将来対応予定)");
+            {
+                var furShader = Shader.Find(NonToonProps.FurShaderName);
+                if (furShader != null)
+                {
+                    targetShader = furShader;
+                    report.Info("Fur", "Poiyomi Fur シェーダーを NonToonFur (シェル法ファー) へ変換します");
+                }
+                else
+                {
+                    report.Warn("Fur", "NonToonFur シェーダーが見つからないため通常の NonToon へ変換します (ファーは失われます)");
+                }
+            }
             if (snapshot.IsLocked)
                 report.Info("ロック", "ロック済みマテリアルのため、保存済みプロパティ値から変換しました");
 
@@ -103,7 +118,7 @@ namespace Rroki.PoiyomiToNonToon
             try
             {
                 // ---- シェーダー差し替え + Poiyomi キーワード全消去 ----
-                target.shader = nonToon;
+                target.shader = targetShader;
                 target.shaderKeywords = Array.Empty<string>();
                 target.renderQueue = -1; // 各モジュール (Base) が必要に応じて上書き
 
@@ -123,7 +138,7 @@ namespace Rroki.PoiyomiToNonToon
                         report.Warn(module.DisplayName, $"モジュール要求の宣言中にエラー: {e.Message}");
                     }
                 }
-                ScModuleChecker.EnsureModules(nonToon, context.RequiredScModules.ToArray(), report);
+                ScModuleChecker.EnsureModules(targetShader, context.RequiredScModules.ToArray(), report);
 
                 // ---- 変換モジュール実行 ----
                 foreach (var module in modules)
@@ -141,7 +156,7 @@ namespace Rroki.PoiyomiToNonToon
 
                 FinalizeAssets(context);
                 // Convert 中に追加宣言されたモジュールがあれば次回のために有効化しておく
-                ScModuleChecker.EnsureModules(nonToon, context.RequiredScModules.ToArray(), report);
+                ScModuleChecker.EnsureModules(targetShader, context.RequiredScModules.ToArray(), report);
 
                 // 旧 Poiyomi プロパティ (不可視のテクスチャ参照等) の掃除。
                 // 残すとビルドの依存収集に旧テクスチャが含まれ、アバター容量が膨張する

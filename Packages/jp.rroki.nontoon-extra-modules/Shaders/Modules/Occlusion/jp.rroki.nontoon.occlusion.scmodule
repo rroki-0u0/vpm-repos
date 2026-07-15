@@ -1,0 +1,7 @@
+{
+    "name": "Occlusion",
+    "uniqueID": "jp.rroki.nontoon.occlusion",
+    "phases": [
+        { "phase": "shade", "path": "occlusion.hlsl", "befores": ["Shade", "RimShade"] }
+    ]
+}

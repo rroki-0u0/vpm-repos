@@ -16,3 +16,9 @@ msgstr "マットキャップ (加算)"
 
 msgid "Detail Normal"
 msgstr "ディテールノーマル"
+
+msgid "Hue Shift"
+msgstr "色相シフト"
+
+msgid "Hue Shift Speed"
+msgstr "色相シフト速度"

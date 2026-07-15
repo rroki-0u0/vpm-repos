@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja-JP\n"
+
+msgid "Occlusion"
+msgstr "オクルージョン (AO)"
+
+msgid "Mode"
+msgstr "適用モード"
+
+msgid "Source"
+msgstr "ソース"
+
+msgid "AO Map"
+msgstr "AO マップ"
+
+msgid "Map Channel"
+msgstr "マップのチャンネル"
+
+msgid "Strength"
+msgstr "強度"
+
+msgid "Min Darkness (Floor)"
+msgstr "常時最小の暗さ (下限)"
+
+msgid "Invert"
+msgstr "反転"

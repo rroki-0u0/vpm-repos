@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja-JP\n"
+
+msgid "Dissolve"
+msgstr "ディゾルブ"
+
+msgid "Amount"
+msgstr "溶解量"
+
+msgid "Noise Map"
+msgstr "ノイズマップ"
+
+msgid "Noise Scroll"
+msgstr "ノイズスクロール"
+
+msgid "Invert Noise"
+msgstr "ノイズ反転"
+
+msgid "Edge Width"
+msgstr "境界の幅"
+
+msgid "Edge Color"
+msgstr "境界の色 (発光)"
+
+msgid "Edge Sharpness"
+msgstr "境界の鋭さ"

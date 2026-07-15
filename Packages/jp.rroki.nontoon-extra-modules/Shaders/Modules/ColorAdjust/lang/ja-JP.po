@@ -11,6 +11,9 @@ msgstr "色調整"
 msgid "Hue"
 msgstr "色相"
 
+msgid "Hue Speed"
+msgstr "色相シフト速度"
+
 msgid "Saturation"
 msgstr "彩度"
 

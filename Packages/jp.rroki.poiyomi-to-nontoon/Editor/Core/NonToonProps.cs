@@ -51,6 +51,15 @@ namespace Rroki.PoiyomiToNonToon
         public const string BacklightRange = "_BacklightRange";
         public const string BacklightMaskChannel = "_BacklightMaskChannel";
 
+        // ---- NonToonFur 本体 (NonToonFur_properties.hlsl) ----
+        public const string FurNoiseMask = "_FurNoiseMask";
+        public const string FurNoiseTiling = "_FurNoiseTiling";
+        public const string FurSubdivision = "_FurSubdivision";   // Integer (SC_uint)
+        public const string FurVector = "_FurVector";             // float4 (xyz: 接空間方向, z=法線方向の長さ)
+        public const string FurRimColor = "_FurRimColor";
+        public const string FurRimFresnelPower = "_FurRimFresnelPower";
+        public const string FurRimAntiLight = "_FurRimAntiLight";
+
         // .scshader 直書き (レガシー Int 型 = float ベース)
         public const string StencilRef = "_StencilRef";
         public const string StencilComp = "_StencilComp";

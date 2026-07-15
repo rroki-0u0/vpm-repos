@@ -142,19 +142,20 @@ namespace Rroki.NonToonExtraModules
             var s = c.Source;
 
             float hue = 0f;
+            float hueSpeed = 0f;
             if (s.GetToggle("_MainHueShiftToggle"))
             {
+                // 色相回転は角度 = shift * 2π なので 0..1 でシームレスにループする (frac 済み)
                 hue = Mathf.Repeat(s.GetFloat("_MainHueShift", 0f), 1f);
-                if (hue > 0.5f) hue -= 1f; // 0..1 → -0.5..0.5 (同じ回転角)
-                if (s.GetFloat("_MainHueShiftSpeed", 0f) > 0.0001f)
-                    c.Report.Drop(DisplayName, "色相シフトのアニメーションは未対応です");
+                // Poiyomi の速度は POI_TIME.x (= 秒/20) 基準 → 秒基準へ 1/20 換算
+                hueSpeed = s.GetFloat("_MainHueShiftSpeed", 0f) / 20f;
             }
 
             float saturation = s.GetToggle("_MainColorAdjustToggle") ? s.GetFloat("_Saturation", 0f) : 0f;
             float brightness = s.GetToggle("_MainColorAdjustToggle") ? s.GetFloat("_MainBrightness", 0f) : 0f;
             float gamma = s.GetToggle("_MainColorAdjustToggle") ? s.GetFloat("_MainGamma", 1f) : 1f;
 
-            bool neutral = Mathf.Abs(hue) < 0.001f && Mathf.Abs(saturation) < 0.001f
+            bool neutral = Mathf.Abs(hue) < 0.001f && Mathf.Abs(hueSpeed) < 0.0001f && Mathf.Abs(saturation) < 0.001f
                         && Mathf.Abs(brightness) < 0.001f && Mathf.Abs(gamma - 1f) < 0.001f;
             if (neutral)
             {
@@ -168,6 +169,15 @@ namespace Rroki.NonToonExtraModules
             c.MarkSourceHandled("_MainHueShiftToggle");
             c.SetInt(NonToonProps.Prop(Mod, "_Enable"), 1);
             c.SetFloat(NonToonProps.Prop(Mod, "_AdjustHue"), hue);
+            c.SetFloat(NonToonProps.Prop(Mod, "_AdjustHueSpeed"), hueSpeed);
+
+            // 色相がアニメーション制御されている場合、クリップのパスを新プロパティへ向ける必要がある
+            bool hueAnimated = s.GetToggle("_MainHueShiftAnimated")
+                || s.Material.GetTag("_MainHueShiftAnimated", false, "") == "1";
+            if (hueAnimated)
+                c.Report.Warn(DisplayName,
+                    "色相シフトがアニメーション制御されています。クリップのプロパティパスを " +
+                    $"material.{NonToonProps.Prop(Mod, "_AdjustHue")} へ変更してください (Animation Retarget / Composer を利用)");
 
             if (saturation > 2f)
             {
@@ -519,6 +529,21 @@ namespace Rroki.NonToonExtraModules
                 c.SetInt(NonToonProps.Prop(Mod, "_Enable"), 1);
                 c.SetFloat(NonToonProps.Prop(Mod, "_MatCapMultiplyDetail"), 0f);
                 c.SetFloat(NonToonProps.Prop(Mod, "_MatCapAddDetail"), 0f);
+
+                // 色相シフト (スロット 3/4 のどちらか、乗算/加算共通)。色相回転は 0=1 でループ
+                foreach (var prefix in new[] { "_Matcap3", "_Matcap4" })
+                {
+                    if (!s.GetToggle(prefix + "HueShiftEnabled")) continue;
+                    c.SetFloat(NonToonProps.Prop(Mod, "_MatCapHueShift"), Mathf.Repeat(s.GetFloat(prefix + "HueShift", 0f), 1f));
+                    c.SetFloat(NonToonProps.Prop(Mod, "_MatCapHueShiftSpeed"), s.GetFloat(prefix + "HueShiftSpeed", 0f) / 20f);
+                    bool anim = s.GetToggle(prefix + "HueShiftAnimated") || s.Material.GetTag(prefix + "HueShiftAnimated", false, "") == "1";
+                    if (anim)
+                        c.Report.Warn("マットキャップ (追加)",
+                            $"マットキャップ色相がアニメーション制御されています。クリップのパスを material.{NonToonProps.Prop(Mod, "_MatCapHueShift")} へ変更してください");
+                    else
+                        c.Report.Info("マットキャップ (追加)", "マットキャップの色相シフトを引き継ぎました (乗算/加算スロット共通)");
+                    break;
+                }
             }
         }
 
@@ -686,9 +711,12 @@ namespace Rroki.NonToonExtraModules
             c.SetFloat(NonToonProps.Prop(Mod, "_ParallaxHeightOffset"),
                 Mathf.Clamp(s.GetFloat("_HeightOffset", 0f), -1f, 1f));
 
-            // Poiyomi の可変ステップ (min-max) を固定ステップへ丸める
-            int steps = Mathf.Clamp(Mathf.RoundToInt(s.GetFloat("_HeightStepsMax", 128f) / 4f), 4, 32);
-            c.SetInt(NonToonProps.Prop(Mod, "_ParallaxSteps"), steps);
+            // Poiyomi の可変ステップ (min-max) をそのまま引き継ぐ (視線角で動的に補間される)
+            int stepsMin = Mathf.Clamp(s.GetInt("_HeightStepsMin", 8), 1, 64);
+            int stepsMax = Mathf.Clamp(s.GetInt("_HeightStepsMax", 32), 1, 64);
+            if (stepsMax < stepsMin) stepsMax = stepsMin;
+            c.SetInt(NonToonProps.Prop(Mod, "_ParallaxStepsMin"), stepsMin);
+            c.SetInt(NonToonProps.Prop(Mod, "_ParallaxStepsMax"), stepsMax);
 
             if (s.GetInt("_HeightMapUV", 0) != 0)
                 c.Report.Warn(DisplayName, "UV0 以外のハイトマップ UV は非対応です");
@@ -696,7 +724,7 @@ namespace Rroki.NonToonExtraModules
                 c.Report.Drop(DisplayName, "ハイトマスクは非対応です");
 
             c.Report.Approx(DisplayName,
-                $"簡易 POM ({steps} ステップ) へ変換しました。視差が逆に見える場合は強度の符号を反転してください。Details 等の後続レイヤーには視差がかかりません");
+                $"POM ({stepsMin}-{stepsMax} ステップ、視線角で可変 + 交点補間) へ変換しました。視差が逆に見える場合は強度の符号を反転してください。Details 等の後続レイヤーには視差がかかりません");
         }
     }
 
@@ -726,10 +754,14 @@ namespace Rroki.NonToonExtraModules
             c.SetFloat(NonToonProps.Prop(Mod, "_GlitterSpeed"), Mathf.Clamp(s.GetFloat("_GlitterSpeed", 5f), 0f, 30f));
             c.SetFloat(NonToonProps.Prop(Mod, "_GlitterMultiplyAlbedo"), Mathf.Clamp01(s.GetFloat("_GlitterUseSurfaceColor", 0f)));
 
-            // Poiyomi の Size (セル内の輝点半径) を輝点セル割合へ大雑把に写像
-            float size = s.GetFloat("_GlitterSize", 0.01f);
-            float density = Mathf.Clamp(size * 2f, 0.005f, 0.5f);
-            c.SetFloat(NonToonProps.Prop(Mod, "_GlitterDensity"), density);
+            // 輝点セル割合 (Poiyomi にも Density がある) と輝点サイズ
+            c.SetFloat(NonToonProps.Prop(Mod, "_GlitterDensity"), Mathf.Clamp(s.GetFloat("_GlitterDensity", 0.05f), 0.001f, 1f));
+            c.SetFloat(NonToonProps.Prop(Mod, "_GlitterSize"), Mathf.Clamp(s.GetFloat("_GlitterSize", 0.05f) * 8f, 0.1f, 1f));
+
+            // Poiyomi のグリッターは本質的に視線角依存 → 角度スパークルを主体にする
+            c.SetFloat(NonToonProps.Prop(Mod, "_GlitterViewDependent"), 0.7f);
+            c.SetFloat(NonToonProps.Prop(Mod, "_GlitterSparkleSharpness"),
+                Mathf.Clamp(10f + s.GetFloat("_GlitterContrast", 1f) * 20f, 1f, 200f));
 
             var mask = s.GetTexture("_GlitterMask");
             if (mask != null)
@@ -743,7 +775,138 @@ namespace Rroki.NonToonExtraModules
                 if (ch >= 0) c.SetInt(NonToonProps.Prop(Mod, "_GlitterMaskChannel"), ch);
             }
 
-            c.Report.Approx(DisplayName, "グリッターを独自実装のスパークルへ近似しました (輝点サイズ/密度は要調整。視線角度による煌めきは未対応)");
+            c.Report.Approx(DisplayName, "グリッターを独自実装のスパークル (視線角依存 + 丸い輝点) へ近似しました (輝点サイズ/鋭さは要調整)");
+        }
+    }
+
+    /// <summary>ディゾルブ (Poiyomi: Dissolve → Dissolve モジュール)。</summary>
+    public sealed class DissolveConversionModule : ConversionModule
+    {
+        const string Mod = "jp.rroki.nontoon.dissolve";
+
+        public override int Order => 255;
+        public override string DisplayName => "ディゾルブ";
+
+        public override bool ShouldRun(ConversionContext c) => c.Source.GetToggle("_EnableDissolve");
+
+        public override void DeclareRequirements(ConversionContext c)
+        {
+            c.RequireScModule(Mod);
+            c.MarkSourceHandled("_EnableDissolve");
+        }
+
+        public override void Convert(ConversionContext c)
+        {
+            var s = c.Source;
+            c.SetInt(NonToonProps.Prop(Mod, "_Enable"), 1);
+            c.SetFloat(NonToonProps.Prop(Mod, "_DissolveAmount"), Mathf.Clamp01(s.GetFloat("_DissolveAmount", 0f)));
+
+            // ---- ノイズマップ + UV + スクロール ----
+            var noise = s.GetTexture("_DissolveNoiseTexture");
+            if (noise != null)
+            {
+                c.SetTexture(NonToonProps.Prop(Mod, "_DissolveNoise"), noise);
+                c.SetTextureST(NonToonProps.Prop(Mod, "_DissolveNoise"),
+                    s.GetTextureScale("_DissolveNoiseTexture"), s.GetTextureOffset("_DissolveNoiseTexture"));
+            }
+            else
+            {
+                c.Report.Warn(DisplayName, "ノイズテクスチャが無いため一様グレー (境界がフラット) になります。ノイズマップの設定を推奨します");
+            }
+
+            int uv = s.GetInt("_DissolveNoiseTextureUV", 0);
+            c.SetInt(NonToonProps.Prop(Mod, "_DissolveNoiseUV"), uv <= 3 ? uv : 0);
+
+            // Poiyomi のパンは POI_TIME.x (= 秒/20) 係数 → UV/秒基準へ 1/20 換算
+            var pan = s.GetColor("_DissolveNoiseTexturePan", Color.clear);
+            c.SetVector(NonToonProps.Prop(Mod, "_DissolveNoiseScroll"), new Vector4(pan.r / 20f, pan.g / 20f, 0f, 0f));
+            c.SetInt(NonToonProps.Prop(Mod, "_DissolveInvert"), s.GetToggle("_DissolveInvertNoise") ? 1 : 0);
+
+            // ---- 境界発光 ----
+            bool edge = s.GetToggle("_DissolveEdgeEnabled");
+            float width = edge ? Mathf.Clamp(s.GetFloat("_DissolveEdgeWidth", 0.05f), 0f, 0.5f) : 0f;
+            c.SetFloat(NonToonProps.Prop(Mod, "_DissolveEdgeWidth"), width);
+            if (edge)
+            {
+                float emission = Mathf.Max(1f, s.GetFloat("_DissolveEdgeEmission", 1f));
+                var edgeColor = s.GetColor("_DissolveEdgeColor", new Color(1f, 0.4f, 0.1f, 1f));
+                edgeColor.r *= emission; edgeColor.g *= emission; edgeColor.b *= emission; edgeColor.a = 1f;
+                c.SetColor(NonToonProps.Prop(Mod, "_DissolveEdgeColor"), edgeColor);
+                c.SetFloat(NonToonProps.Prop(Mod, "_DissolveEdgeSharpness"),
+                    Mathf.Clamp(0.5f + s.GetFloat("_DissolveEdgeHardness", 0.5f) * 3f, 0.1f, 8f));
+            }
+
+            // ---- マスク (溶ける範囲の限定) ----
+            var mask = s.GetTexture("_DissolveMask");
+            if (mask != null)
+            {
+                int ch = c.AllocateMaskChannel(new MaskChannelSource
+                {
+                    Texture = mask,
+                    SourceChannel = Mathf.Clamp(s.GetInt("_DissolveMaskChannel", 0), 0, 3),
+                    Invert = s.GetToggle("_DissolveMaskInvert"),
+                    Label = "ディゾルブ",
+                });
+                if (ch >= 0) c.SetInt(NonToonProps.Prop(Mod, "_DissolveMaskChannel"), ch);
+            }
+
+            // ---- 非対応モードの通知 ----
+            int type = s.GetInt("_DissolveType", 0);
+            if (type != 0 && type != 1)
+                c.Report.Approx(DisplayName, $"ディゾルブタイプ ({type}: Point-to-Point / 頂点高さ等) はノイズ閾値ディゾルブとして近似しました");
+            if (s.GetToggle("_DissolveVertexHeightEnabled"))
+                c.Report.Drop(DisplayName, "頂点高さディゾルブは非対応です");
+            if (s.GetToggle("_DissolveAudioLink"))
+                c.Report.Drop(DisplayName, "AudioLink 連動は非対応です");
+            if (s.GetToggle("_DissolveAlphaAnimated") || s.Material.GetTag("_DissolveAmountAnimated", false, "") == "1")
+                c.Report.Warn(DisplayName,
+                    "溶解量がアニメーション制御されています。アニメーションクリップのプロパティパスを " +
+                    $"material.{NonToonProps.Prop(Mod, "_DissolveAmount")} へ変更してください");
+
+            c.Report.Approx(DisplayName, "ノイズ閾値ディゾルブ + 境界発光へ変換しました (影/深度パスでも欠落します)");
+        }
+    }
+
+    /// <summary>
+    /// オクルージョン (Poiyomi: Occlusion Map → Occlusion モジュール)。
+    /// くぼみを常に暗くする静的 AO。指向性のトゥーン影とは独立して適用する。
+    /// </summary>
+    public sealed class OcclusionConversionModule : ConversionModule
+    {
+        const string Mod = "jp.rroki.nontoon.occlusion";
+
+        public override int Order => 260;
+        public override string DisplayName => "オクルージョン (AO)";
+
+        public override bool ShouldRun(ConversionContext c) =>
+            c.Source.GetTexture("_OcclusionMap") != null
+            && c.Source.GetFloat("_OcclusionStrength", 1f) > 0.001f;
+
+        public override void DeclareRequirements(ConversionContext c) => c.RequireScModule(Mod);
+
+        public override void Convert(ConversionContext c)
+        {
+            var s = c.Source;
+            var map = s.GetTexture("_OcclusionMap")!;
+
+            c.SetInt(NonToonProps.Prop(Mod, "_Enable"), 1);
+            c.SetInt(NonToonProps.Prop(Mod, "_OcclusionMode"), 0);    // Ramp (トゥーンランプ連動)
+            c.SetInt(NonToonProps.Prop(Mod, "_OcclusionSource"), 0);  // Map
+            c.SetTexture(NonToonProps.Prop(Mod, "_OcclusionMap"), map);
+            c.SetTextureST(NonToonProps.Prop(Mod, "_OcclusionMap"),
+                s.GetTextureScale("_OcclusionMap"), s.GetTextureOffset("_OcclusionMap"));
+            c.SetInt(NonToonProps.Prop(Mod, "_OcclusionMapChannel"), Mathf.Clamp(s.GetInt("_OcclusionMapChannel", 0), 0, 3));
+            c.SetFloat(NonToonProps.Prop(Mod, "_OcclusionStrength"), Mathf.Clamp01(s.GetFloat("_OcclusionStrength", 1f)));
+            c.SetFloat(NonToonProps.Prop(Mod, "_OcclusionFloor"), 0f);
+            c.SetInt(NonToonProps.Prop(Mod, "_OcclusionInvert"), 0);
+
+            int uv = s.GetInt("_OcclusionMapUV", 0);
+            c.SetInt(NonToonProps.Prop(Mod, "_OcclusionUV"), uv <= 3 ? uv : 0);
+
+            c.Report.Approx(DisplayName,
+                "AO マップをオクルージョンモジュール (トゥーンランプ連動) へ引き継ぎました。" +
+                "首元など別メッシュの境目を消すには、顔・体の両マテリアルへ同じ AO を載せてください " +
+                "(Shade を使わないマテリアルは Mode=Multiply に切り替えてください)");
         }
     }
 }

@@ -1,0 +1,12 @@
+SC_uint(_Enable, 0, [SCInHeader][SCToggle][SCConstValue(1,pixel)], "", "")
+
+SC_uint(_OcclusionMode, 0, [SCEnum(Ramp, 0, Multiply, 1, Light, 2)], "Mode", "")
+SC_uint(_OcclusionSource, 0, [SCEnum(Map, 0, SharedMask, 1)], "Source", "")
+SC_Texture2D(_OcclusionMap, "white", [], "AO Map", "")
+SC_ScaleOffset(_OcclusionMap)
+SC_uint(_OcclusionUV, 0, [SCEnum(UV0, 0, UV1, 1, UV2, 2, UV3, 3)], "__UV", "")
+SC_uint(_OcclusionMapChannel, 0, [SCEnum(R, 0, G, 1, B, 2, A, 3)], "Map Channel", "")
+SC_uint(_OcclusionMaskChannel, 3, [SCMaskChannel], "__MaskChannel", "")
+SC_float(_OcclusionStrength, 1, [SCRange(0,1)], "Strength", "")
+SC_float(_OcclusionFloor, 0, [SCRange(0,1)], "Min Darkness (Floor)", "")
+SC_uint(_OcclusionInvert, 0, [SCToggle], "Invert", "")

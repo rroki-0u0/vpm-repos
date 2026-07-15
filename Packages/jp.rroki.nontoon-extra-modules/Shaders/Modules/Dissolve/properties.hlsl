@@ -1,0 +1,12 @@
+SC_uint(_Enable, 0, [SCInHeader][SCToggle][SCConstValue(1,pixel)], "", "")
+
+SC_float(_DissolveAmount, 0, [SCRange(0,1)], "Amount", "")
+SC_Texture2D(_DissolveNoise, "gray", [], "Noise Map", "")
+SC_ScaleOffset(_DissolveNoise)
+SC_uint(_DissolveNoiseUV, 0, [SCEnum(UV0, 0, UV1, 1, UV2, 2, UV3, 3)], "__UV", "")
+SC_float4(_DissolveNoiseScroll, (0,0,0,0), [SCVector2], "Noise Scroll", "")
+SC_uint(_DissolveInvert, 0, [SCToggle], "Invert Noise", "")
+SC_float(_DissolveEdgeWidth, 0.05, [SCRange(0,0.5)], "Edge Width", "")
+SC_color(_DissolveEdgeColor, (1,0.4,0.1,1), [HDR], "Edge Color", "")
+SC_float(_DissolveEdgeSharpness, 1, [SCRange(0.1,8)], "Edge Sharpness", "")
+SC_uint(_DissolveMaskChannel, 3, [SCMaskChannel], "__MaskChannel", "")

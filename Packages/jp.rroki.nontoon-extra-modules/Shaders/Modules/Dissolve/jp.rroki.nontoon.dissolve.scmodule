@@ -1,0 +1,7 @@
+{
+    "name": "Dissolve",
+    "uniqueID": "jp.rroki.nontoon.dissolve",
+    "phases": [
+        { "phase": "base", "path": "dissolve_base.hlsl" }
+    ]
+}

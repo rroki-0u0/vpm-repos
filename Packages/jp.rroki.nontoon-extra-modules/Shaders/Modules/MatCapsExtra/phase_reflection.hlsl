@@ -10,6 +10,11 @@ if (_Enable)
     half2 extraMcUV = mul(extraMcTBN_VD, sd.N).xy * 0.5 + 0.5;
     half2 extraMcUVDetail = mul(extraMcTBN_VD, sd.N_detail).xy * 0.5 + 0.5;
 
-    sd.col.rgb *= lerp(1, SCSampleClamp(_MatCapMultiply, lerp(extraMcUV, extraMcUVDetail, _MatCapMultiplyDetail)).rgb * _MatCapMultiplyColor.rgb, sd.mask[_MatCapMultiplyMaskChannel]);
-    sd.add += SCSampleClamp(_MatCapAdd, lerp(extraMcUV, extraMcUVDetail, _MatCapAddDetail)).rgb * _MatCapAddColor.rgb * sd.mask[_MatCapAddMaskChannel];
+    // 色相シフト (0-1 = 一周、シームレスにループ可能)。乗算/加算スロット共通。
+    half extraMcHue = frac(_MatCapHueShift + _MatCapHueShiftSpeed * _Time.y);
+    half3 extraMcMulColor = RrokiNTHueRotate(_MatCapMultiplyColor.rgb, extraMcHue);
+    half3 extraMcAddColor = RrokiNTHueRotate(_MatCapAddColor.rgb, extraMcHue);
+
+    sd.col.rgb *= lerp(1, SCSampleClamp(_MatCapMultiply, lerp(extraMcUV, extraMcUVDetail, _MatCapMultiplyDetail)).rgb * extraMcMulColor, sd.mask[_MatCapMultiplyMaskChannel]);
+    sd.add += SCSampleClamp(_MatCapAdd, lerp(extraMcUV, extraMcUVDetail, _MatCapAddDetail)).rgb * extraMcAddColor * sd.mask[_MatCapAddMaskChannel];
 }

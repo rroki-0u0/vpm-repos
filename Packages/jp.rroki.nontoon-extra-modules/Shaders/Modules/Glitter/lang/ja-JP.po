@@ -17,5 +17,14 @@ msgstr "密度 (グリッド数)"
 msgid "Density"
 msgstr "輝点の割合"
 
+msgid "Point Size"
+msgstr "輝点サイズ"
+
+msgid "View Dependent"
+msgstr "視線依存の強さ"
+
+msgid "Sparkle Sharpness"
+msgstr "煌めきの鋭さ"
+
 msgid "Twinkle Speed"
 msgstr "明滅速度"

@@ -3,6 +3,24 @@
 このプロジェクトの注目すべき変更はこのファイルに記録されます。
 フォーマットは [Keep a Changelog](https://keepachangelog.com/ja/1.1.0/) に基づきます。
 
+## [0.2.2] - 2026-07-16
+
+### Added
+
+- **バックフェースモジュール** (`jp.rroki.nontoon.backface`): 裏面 (`vertex.isFront == false`) のみアルベドの色/テクスチャを差し替える。二重構造の服の裏地・内側を別色にしたい場合向け。base フェーズでライティング前に置換するため裏面も表面と同じ光/影を受ける。Tint (元色×色) / Replace (置き換え) の 2 モード、専用テクスチャ (UV/ST 対応)、アルファ置換、色相シフト (共有 `RrokiNTHueRotate`)、エミッション強度。既定は無効のため既存マテリアルは不変
+- Poiyomi 変換: **BackFace** (`_BackFaceEnabled` / `_BackFaceColor` / `_BackFaceTexture` / `_BackFaceHueShift` / `_BackFaceEmissionStrength` / `_BackFaceReplaceAlpha`) をバックフェースモジュールへ引き継ぎ (Replace モード)
+- 内部パララックスの**色ソースに MatCap** (ビュー依存の球面マップ) を追加。`_InternalColorSource` (Texture / MatCap / Multiply) で切替、`_InternalMatCap` テクスチャ、`_InternalMatCapParallax` (法線ベース〜内部視差シフトへの連動量)、`_InternalMatCapHue` / `_InternalMatCapHueSpeed` (色相シフト、共有 `RrokiNTHueRotate` を流用) を追加。宝石/クリスタル/瞳の内部表現向け。内部マップのアルファ (形状/深度) はそのまま使い、色だけを MatCap に差し替える。base (Replace) / add 両フェーズ対応。既定は Texture のため既存マテリアルは不変
+- エディタツール **エミッションマスク合成**: 既存の発光マスクへ追加マスクを合成して 1 枚の PNG に出力する (元テクスチャは非破壊)。2 つのモード:
+  - **共有マスクのチャンネル**: `_SharedMask` の発光チャンネル (マテリアル指定で自動取得) へ追加マスクを Max / Add / Subtract 合成。ソースは R/G/B/A/輝度/最大RGB から選択。対象チャンネル以外はバイト単位で不変
+  - **エミッションマップ (RGB)**: 発光色マップ同士を Add / Max / Screen 合成 (RGB そのまま / チャンネル×色)
+  - マテリアル指定で結果の自動割り当て、エミッションモジュールの有効化ボタン ([SCConstValue] キーワード同期) 付き
+  - PNG/JPG はファイルを直接デコードして合成する (インポーターの DXT 圧縮ノイズを焼き込まない)。スクリプト用 API `EmissionMaskCombiner.CombineMaskChannelSimple` あり
+
+### Fixed
+
+- ハイトマップ視差にマスクを追加。従来は視差がメッシュ全面に適用されていた (マスク未対応)。**専用マスクテクスチャ** `_ParallaxMask` + チャンネル選択 `_ParallaxMaskChannel` + 反転 `_ParallaxMaskInvert` を追加し、元 UV でのマスク値で視差量を減衰するようにした (マスク外=視差なし、マスク内=完全な視差)。既定 "white" のため未設定時は従来どおり全面に視差 (後方互換)。共有マスク (_SharedMask) のチャンネルではなく専用テクスチャにしたのは、masked 機能が多い材質では共有マスクの 4 チャンネルが枯渇して視差マスクが割り当てられない問題があったため
+- Poiyomi 変換: これまで「非対応」として破棄していた Poiyomi のハイトマスク (`_Heightmask`) を専用マスク `_ParallaxMask` として引き継ぎ、`_HeightmaskChannel` / `_HeightmaskInvert` も反映するようになった (視差がマスク範囲に限定される)
+
 ## [0.2.1] - 2026-07-16
 
 ### Added

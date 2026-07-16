@@ -16,6 +16,16 @@ if (_Enable && _InternalSurfaceBlend == 1)
     float internalRMax = max(_InternalDepth.y, internalRMin + 1e-5);
     uint internalRSteps = max(_InternalIterations, 1u);
 
+    // MatCap 色ソース (ビュー依存の球面マップ)。層に依らないため一度だけ計算する。
+    // _InternalMatCapParallax で内部視差シフトを UV に加え、奥に沈んだ映り込みを表現できる。
+    half3 internalRMcCol = 0;
+    if (_InternalColorSource != 0u)
+    {
+        half2 internalRMcUV = RrokiNTMatCapUV(vertex.Head, sd.N) + internalRShift * _InternalMatCapParallax;
+        internalRMcCol = SCSampleClamp(_InternalMatCap, internalRMcUV).rgb;
+        internalRMcCol = RrokiNTHueRotate(internalRMcCol, frac(_InternalMatCapHue + _InternalMatCapHueSpeed * _Time.y));
+    }
+
     if (_InternalMode == 0)
     {
         // Heightmap: 内部ハイトフィールド (A=高さ, 白=浅い) への POM 交差
@@ -48,7 +58,9 @@ if (_Enable && _InternalSurfaceBlend == 1)
         float internalRT = saturate(1.0 - lerp(internalRRayH, internalRPrevRayH, internalRW)); // 0=表面, 1=最深
 
         half4 internalRSample = SCSampleRepeat(_InternalMap, internalRUV);
-        half3 internalRColor = internalRSample.rgb
+        half3 internalRPickRGB = _InternalColorSource == 0u ? internalRSample.rgb
+            : (_InternalColorSource == 1u ? internalRMcCol : internalRSample.rgb * internalRMcCol);
+        half3 internalRColor = internalRPickRGB
             * lerp(_InternalColorNear.rgb, _InternalColorFar.rgb, internalRT)
             * lerp(_InternalFadeNear, _InternalFadeFar, internalRT);
         // 深度が浅い (=沈んでいない) 箇所は柄を出さない → マスク外/平坦部は自然に効果が消える
@@ -68,7 +80,9 @@ if (_Enable && _InternalSurfaceBlend == 1)
             half4 internalRSample = SCSampleRepeat(_InternalMap, internalRBaseUV - internalRShift * internalRDepth);
             half internalROpacity = saturate(internalRSample.a * lerp(_InternalFadeNear, _InternalFadeFar, internalRT));
             half3 internalRTint = lerp(_InternalColorNear.rgb, _InternalColorFar.rgb, internalRT);
-            internalRSum += internalRSample.rgb * internalRTint * internalROpacity * internalRRemain;
+            half3 internalRPickRGB = _InternalColorSource == 0u ? internalRSample.rgb
+                : (_InternalColorSource == 1u ? internalRMcCol : internalRSample.rgb * internalRMcCol);
+            internalRSum += internalRPickRGB * internalRTint * internalROpacity * internalRRemain;
             internalRRemain *= 1.0 - internalROpacity;
         }
         half internalRCover = saturate(_InternalStrength);

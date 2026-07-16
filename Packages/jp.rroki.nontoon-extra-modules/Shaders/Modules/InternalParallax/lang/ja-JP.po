@@ -40,3 +40,18 @@ msgstr "ライティングを受ける"
 
 msgid "Layers"
 msgstr "レイヤー数"
+
+msgid "Color Source"
+msgstr "色ソース"
+
+msgid "MatCap"
+msgstr "マットキャップ"
+
+msgid "MatCap Parallax"
+msgstr "マットキャップの視差連動"
+
+msgid "MatCap Hue Shift"
+msgstr "マットキャップ色相シフト"
+
+msgid "MatCap Hue Speed"
+msgstr "マットキャップ色相シフト速度"

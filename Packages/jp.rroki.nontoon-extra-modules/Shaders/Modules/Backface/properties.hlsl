@@ -1,0 +1,11 @@
+SC_uint(_Enable, 0, [SCInHeader][SCToggle][SCConstValue(1,pixel)], "", "")
+
+SC_uint(_BackfaceReplace, 0, [SCEnum(Tint, 0, Replace, 1)], "Mode", "")
+SC_color(_BackfaceColor, (1,1,1,1), [HDR], "Color", "")
+SC_Texture2D(_BackfaceTexture, "white", [], "Texture", "")
+SC_ScaleOffset(_BackfaceTexture)
+SC_uint(_BackfaceUV, 0, [SCEnum(UV0, 0, UV1, 1, UV2, 2, UV3, 3)], "__UV", "")
+SC_uint(_BackfaceReplaceAlpha, 0, [SCToggle], "Replace Alpha", "")
+SC_float(_BackfaceHue, 0, [SCRange(0,1)], "Hue Shift", "")
+SC_float(_BackfaceHueSpeed, 0, [SCRange(-2,2)], "Hue Speed", "")
+SC_float(_BackfaceEmission, 0, [SCRange(0,20)], "Emission Strength", "")

@@ -47,16 +47,23 @@ namespace Rroki.PoiyomiToNonToon
                 var type = AppDomain.CurrentDomain.GetAssemblies()
                     .FirstOrDefault(a => a.GetName().Name == "jp.lilxyzw.shadercore")
                     ?.GetType("jp.lilxyzw.shadercore.ProjectSettings");
-                var getModules = type?.GetMethod("GetShaderModules",
-                    BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+                // shadercore 0.1.5 の API は GetShaderModules(string path, out List<string> moduleNames,
+                // out List<...> multiModules) の 3 引数版のみ。moduleNames は ProjectSettings 内部の
+                // ライブリストなので、これを直接 mutate + Save で登録する (未登録なら全モジュール有効で自動生成)。
+                MethodInfo? getModules = null;
+                if (type != null)
+                    foreach (var mi in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                        if (mi.Name == "GetShaderModules" && mi.GetParameters().Length == 3) { getModules = mi; break; }
                 if (getModules == null)
                 {
                     report.Warn("モジュール", "Shader Core の ProjectSettings API が見つからず、モジュールを有効化できませんでした");
                     return;
                 }
 
-                // GetShaderModules はライブな List<string> を返す (未登録なら全モジュール有効で自動生成)
-                if (getModules.Invoke(null, new object[] { shaderPath }) is not IList modules)
+                var moduleArgs = new object?[] { shaderPath, null, null };
+                getModules.Invoke(null, moduleArgs);
+                if (moduleArgs[1] is not IList modules)
                 {
                     report.Warn("モジュール", "モジュールリストを取得できませんでした");
                     return;

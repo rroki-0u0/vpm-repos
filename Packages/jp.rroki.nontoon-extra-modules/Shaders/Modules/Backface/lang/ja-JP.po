@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja-JP\n"
+
+msgid "Backface"
+msgstr "バックフェース"
+
+msgid "Mode"
+msgstr "モード (Tint=元色に乗算 / Replace=置き換え)"
+
+msgid "Color"
+msgstr "色"
+
+msgid "Texture"
+msgstr "テクスチャ"
+
+msgid "Replace Alpha"
+msgstr "アルファも置き換える"
+
+msgid "Hue Shift"
+msgstr "色相シフト"
+
+msgid "Hue Speed"
+msgstr "色相シフト速度"
+
+msgid "Emission Strength"
+msgstr "エミッション強度"

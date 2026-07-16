@@ -12,45 +12,59 @@
 #if !defined(OUTLINE)
 if (_Enable)
 {
-    // 接空間視線 (TBN は行ベクトルが T/B/N の行列)
-    half3 parallaxViewTS = mul(vertex.TBN, vertex.V);
-    // 視線が寝ているほど後退量が増える (offset limiting)
-    float2 parallaxMaxOffset = parallaxViewTS.xy / max(abs(parallaxViewTS.z), 0.25) * _ParallaxStrength;
+    // マスク: 元 UV での専用マスク値で視差量を減衰する。共有マスクのチャンネルではなく
+    // 専用テクスチャを使うため、他機能でチャンネルが埋まっていても影響を受けない。
+    // マスク外 (0) は視差なし、内 (1) は完全視差。既定 "white" のため未設定時は全面に視差 (従来動作)。
+    float2 parallaxOrigUV = sd.uv;
+    float parallaxMask = saturate(SCSampleRepeat(_ParallaxMask, parallaxOrigUV)[_ParallaxMaskChannel]);
+    if (_ParallaxMaskInvert) parallaxMask = 1.0 - parallaxMask;
+    float2 parallaxUV = parallaxOrigUV;
 
-    // 正面 (z≈1) では Min、斜め (z≈0) では Max ステップ
-    float parallaxViewFactor = saturate(abs(parallaxViewTS.z));
-    uint parallaxSteps = (uint)round(lerp((float)_ParallaxStepsMax, (float)_ParallaxStepsMin, parallaxViewFactor));
-    parallaxSteps = max(parallaxSteps, 1u);
-    float parallaxStepSize = 1.0 / parallaxSteps;
-    float2 parallaxDeltaUV = parallaxMaxOffset * parallaxStepSize;
-
-    float2 parallaxUV = sd.uv;
-    float parallaxRayHeight = 1.0;
-    float parallaxMapHeight = saturate(SCSampleRepeat(_ParallaxHeightMap, parallaxUV).r + _ParallaxHeightOffset);
-
-    // 直前サンプル (交点の線形補間に使う)
-    float2 parallaxPrevUV = parallaxUV;
-    float parallaxPrevRayHeight = parallaxRayHeight;
-    float parallaxPrevMapHeight = parallaxMapHeight;
-
-    [loop]
-    for (uint parallaxIndex = 0u; parallaxIndex < parallaxSteps; parallaxIndex++)
+    if (parallaxMask > 0.0)
     {
-        if (parallaxMapHeight >= parallaxRayHeight) break;
-        parallaxPrevUV = parallaxUV;
-        parallaxPrevRayHeight = parallaxRayHeight;
-        parallaxPrevMapHeight = parallaxMapHeight;
+        // 接空間視線 (TBN は行ベクトルが T/B/N の行列)
+        half3 parallaxViewTS = mul(vertex.TBN, vertex.V);
+        // 視線が寝ているほど後退量が増える (offset limiting)
+        float2 parallaxMaxOffset = parallaxViewTS.xy / max(abs(parallaxViewTS.z), 0.25) * _ParallaxStrength;
 
-        parallaxRayHeight -= parallaxStepSize;
-        parallaxUV -= parallaxDeltaUV;
-        parallaxMapHeight = saturate(SCSampleRepeat(_ParallaxHeightMap, parallaxUV).r + _ParallaxHeightOffset);
+        // 正面 (z≈1) では Min、斜め (z≈0) では Max ステップ
+        float parallaxViewFactor = saturate(abs(parallaxViewTS.z));
+        uint parallaxSteps = (uint)round(lerp((float)_ParallaxStepsMax, (float)_ParallaxStepsMin, parallaxViewFactor));
+        parallaxSteps = max(parallaxSteps, 1u);
+        float parallaxStepSize = 1.0 / parallaxSteps;
+        float2 parallaxDeltaUV = parallaxMaxOffset * parallaxStepSize;
+
+        float2 parallaxCurUV = parallaxOrigUV;
+        float parallaxRayHeight = 1.0;
+        float parallaxMapHeight = saturate(SCSampleRepeat(_ParallaxHeightMap, parallaxCurUV).r + _ParallaxHeightOffset);
+
+        // 直前サンプル (交点の線形補間に使う)
+        float2 parallaxPrevUV = parallaxCurUV;
+        float parallaxPrevRayHeight = parallaxRayHeight;
+        float parallaxPrevMapHeight = parallaxMapHeight;
+
+        [loop]
+        for (uint parallaxIndex = 0u; parallaxIndex < parallaxSteps; parallaxIndex++)
+        {
+            if (parallaxMapHeight >= parallaxRayHeight) break;
+            parallaxPrevUV = parallaxCurUV;
+            parallaxPrevRayHeight = parallaxRayHeight;
+            parallaxPrevMapHeight = parallaxMapHeight;
+
+            parallaxRayHeight -= parallaxStepSize;
+            parallaxCurUV -= parallaxDeltaUV;
+            parallaxMapHeight = saturate(SCSampleRepeat(_ParallaxHeightMap, parallaxCurUV).r + _ParallaxHeightOffset);
+        }
+
+        // 交点を直前サンプルとの線形補間で求める (relief mapping の補間法)
+        float parallaxAfter = parallaxMapHeight - parallaxRayHeight;               // >= 0 (交差後)
+        float parallaxBefore = parallaxPrevMapHeight - parallaxPrevRayHeight;      // <= 0 (交差前)
+        float parallaxWeight = parallaxAfter / max(parallaxAfter - parallaxBefore, 1e-5);
+        parallaxCurUV = lerp(parallaxCurUV, parallaxPrevUV, parallaxWeight);
+
+        // マスクで視差量を減衰 (マスク外 = 元 UV = 視差なし)
+        parallaxUV = lerp(parallaxOrigUV, parallaxCurUV, parallaxMask);
     }
-
-    // 交点を直前サンプルとの線形補間で求める (relief mapping の補間法)
-    float parallaxAfter = parallaxMapHeight - parallaxRayHeight;               // >= 0 (交差後)
-    float parallaxBefore = parallaxPrevMapHeight - parallaxPrevRayHeight;      // <= 0 (交差前)
-    float parallaxWeight = parallaxAfter / max(parallaxAfter - parallaxBefore, 1e-5);
-    parallaxUV = lerp(parallaxUV, parallaxPrevUV, parallaxWeight);
 
     // 視差後の UV でコアのサンプリングをやり直す
     sd.uv = parallaxUV;

@@ -22,3 +22,12 @@ msgstr "ステップ数 (最小・正面)"
 
 msgid "Steps (Max)"
 msgstr "ステップ数 (最大・斜め)"
+
+msgid "Mask"
+msgstr "マスク (視差の適用範囲)"
+
+msgid "Mask Channel"
+msgstr "マスクのチャンネル"
+
+msgid "Mask Invert"
+msgstr "マスクを反転"

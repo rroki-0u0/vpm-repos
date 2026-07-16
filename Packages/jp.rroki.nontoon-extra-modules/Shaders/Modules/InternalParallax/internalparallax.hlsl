@@ -16,6 +16,15 @@ if (_Enable && _InternalSurfaceBlend == 0)
     float2 internalShift = internalViewTS.xy / max(abs(internalViewTS.z), 0.25);
     float2 internalBaseUV = vertex.uv[_InternalUV].xy * _InternalMap_ST.xy + _InternalMap_ST.zw;
 
+    // MatCap 色ソース (ビュー依存の球面マップ)。層に依らないため一度だけ計算する。
+    half3 internalMcCol = 0;
+    if (_InternalColorSource != 0u)
+    {
+        half2 internalMcUV = RrokiNTMatCapUV(vertex.Head, sd.N) + internalShift * _InternalMatCapParallax;
+        internalMcCol = SCSampleClamp(_InternalMatCap, internalMcUV).rgb;
+        internalMcCol = RrokiNTHueRotate(internalMcCol, frac(_InternalMatCapHue + _InternalMatCapHueSpeed * _Time.y));
+    }
+
     half3 internalSum = 0;
     if (_InternalMode == 0)
     {
@@ -29,7 +38,9 @@ if (_Enable && _InternalSurfaceBlend == 0)
             half internalGate = step(internalT, 1.0 - internalSample.a);
             half3 internalTint = lerp(_InternalColorNear.rgb, _InternalColorFar.rgb, internalT);
             half internalBrightness = lerp(_InternalFadeNear, _InternalFadeFar, internalT);
-            internalSum += internalSample.rgb * internalTint * internalBrightness * internalGate;
+            half3 internalPickRGB = _InternalColorSource == 0u ? internalSample.rgb
+                : (_InternalColorSource == 1u ? internalMcCol : internalSample.rgb * internalMcCol);
+            internalSum += internalPickRGB * internalTint * internalBrightness * internalGate;
         }
     }
     else
@@ -44,7 +55,9 @@ if (_Enable && _InternalSurfaceBlend == 0)
             half4 internalSample = SCSampleRepeat(_InternalMap, internalBaseUV - internalShift * internalDepth);
             half internalOpacity = saturate(internalSample.a * lerp(_InternalFadeNear, _InternalFadeFar, internalT));
             half3 internalTint = lerp(_InternalColorNear.rgb, _InternalColorFar.rgb, internalT);
-            internalSum += internalSample.rgb * internalTint * internalOpacity * internalRemain;
+            half3 internalPickRGB = _InternalColorSource == 0u ? internalSample.rgb
+                : (_InternalColorSource == 1u ? internalMcCol : internalSample.rgb * internalMcCol);
+            internalSum += internalPickRGB * internalTint * internalOpacity * internalRemain;
             internalRemain *= 1.0 - internalOpacity;
         }
     }

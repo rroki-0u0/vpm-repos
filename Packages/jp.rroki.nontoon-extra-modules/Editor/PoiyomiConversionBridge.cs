@@ -720,8 +720,18 @@ namespace Rroki.NonToonExtraModules
 
             if (s.GetInt("_HeightMapUV", 0) != 0)
                 c.Report.Warn(DisplayName, "UV0 以外のハイトマップ UV は非対応です");
-            if (s.GetTexture("_Heightmask") != null)
-                c.Report.Drop(DisplayName, "ハイトマスクは非対応です");
+
+            // ハイトマスクを専用マスクとして引き継ぐ (共有マスクのチャンネル枯渇に依存しない)。
+            // 視差モジュールは masked 機能が多い材質でも確実にマスクを反映できる。
+            var heightMask = s.GetTexture("_Heightmask");
+            if (heightMask != null)
+            {
+                int srcCh = Mathf.Clamp(s.GetInt("_HeightmaskChannel", 0), 0, 3);
+                c.SetTexture(NonToonProps.Prop(Mod, "_ParallaxMask"), heightMask);
+                c.SetInt(NonToonProps.Prop(Mod, "_ParallaxMaskChannel"), srcCh);
+                c.SetInt(NonToonProps.Prop(Mod, "_ParallaxMaskInvert"), s.GetToggle("_HeightmaskInvert") ? 1 : 0);
+                c.Report.Info(DisplayName, "ハイトマスクを専用マスクとして引き継ぎました (視差がマスク範囲に限定されます)");
+            }
 
             c.Report.Approx(DisplayName,
                 $"POM ({stepsMin}-{stepsMax} ステップ、視線角で可変 + 交点補間) へ変換しました。視差が逆に見える場合は強度の符号を反転してください。Details 等の後続レイヤーには視差がかかりません");
@@ -907,6 +917,58 @@ namespace Rroki.NonToonExtraModules
                 "AO マップをオクルージョンモジュール (トゥーンランプ連動) へ引き継ぎました。" +
                 "首元など別メッシュの境目を消すには、顔・体の両マテリアルへ同じ AO を載せてください " +
                 "(Shade を使わないマテリアルは Mode=Multiply に切り替えてください)");
+        }
+    }
+
+    /// <summary>
+    /// バックフェース (Poiyomi: BackFace → Backface モジュール)。
+    /// 裏面 (isFront == false) のアルベドを別色/別テクスチャに差し替える。二重構造の服の裏地など向け。
+    /// </summary>
+    public sealed class BackfaceConversionModule : ConversionModule
+    {
+        const string Mod = "jp.rroki.nontoon.backface";
+
+        public override int Order => 250;
+        public override string DisplayName => "バックフェース";
+
+        public override bool ShouldRun(ConversionContext c) => c.Source.GetToggle("_BackFaceEnabled");
+
+        public override void DeclareRequirements(ConversionContext c)
+        {
+            c.RequireScModule(Mod);
+            c.MarkSourceHandled("_BackFaceEnabled");
+        }
+
+        public override void Convert(ConversionContext c)
+        {
+            var s = c.Source;
+            c.SetInt(NonToonProps.Prop(Mod, "_Enable"), 1);
+            // Poiyomi の BackFace は裏面色で置き換える方式
+            c.SetInt(NonToonProps.Prop(Mod, "_BackfaceReplace"), 1);
+            c.SetColor(NonToonProps.Prop(Mod, "_BackfaceColor"), s.GetColor("_BackFaceColor", Color.white));
+
+            var tex = s.GetTexture("_BackFaceTexture");
+            if (tex != null)
+            {
+                c.SetTexture(NonToonProps.Prop(Mod, "_BackfaceTexture"), tex);
+                c.SetTextureST(NonToonProps.Prop(Mod, "_BackfaceTexture"),
+                    s.GetTextureScale("_BackFaceTexture"), s.GetTextureOffset("_BackFaceTexture"));
+            }
+            int uv = s.GetInt("_BackFaceTextureUV", 0);
+            c.SetInt(NonToonProps.Prop(Mod, "_BackfaceUV"), uv <= 3 ? uv : 0);
+
+            c.SetInt(NonToonProps.Prop(Mod, "_BackfaceReplaceAlpha"), s.GetToggle("_BackFaceReplaceAlpha") ? 1 : 0);
+
+            if (s.GetToggle("_BackFaceHueShiftEnabled"))
+            {
+                c.SetFloat(NonToonProps.Prop(Mod, "_BackfaceHue"), Mathf.Repeat(s.GetFloat("_BackFaceHueShift", 0f), 1f));
+                c.SetFloat(NonToonProps.Prop(Mod, "_BackfaceHueSpeed"), s.GetFloat("_BackFaceHueShiftSpeed", 0f));
+            }
+
+            c.SetFloat(NonToonProps.Prop(Mod, "_BackfaceEmission"),
+                Mathf.Clamp(s.GetFloat("_BackFaceEmissionStrength", 0f), 0f, 20f));
+
+            c.Report.Info(DisplayName, "裏面の色/テクスチャを Backface モジュールへ引き継ぎました (裏地など二重構造向け)");
         }
     }
 }

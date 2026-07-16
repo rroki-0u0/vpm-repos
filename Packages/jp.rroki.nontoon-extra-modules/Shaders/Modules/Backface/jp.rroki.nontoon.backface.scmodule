@@ -1,0 +1,7 @@
+{
+    "name": "Backface",
+    "uniqueID": "jp.rroki.nontoon.backface",
+    "phases": [
+        { "phase": "base", "path": "backface.hlsl" }
+    ]
+}
